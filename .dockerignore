@@ -1,0 +1,16 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints
+Train_plant_disease.ipynb
+Test_plant_disease.ipynb
+dataset/
+node_modules
+frontend/node_modules
+frontend/dist
+scratch/
+run_fullstack.bat

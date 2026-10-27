@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: plantcare-ai
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 8000

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlantCare AI - Plant Disease Recognition & Grad-CAM Explainability</title>
+  <meta name="description" content="State-of-the-art AI plant disease diagnosis platform powered by Deep Convolutional Neural Networks and Grad-CAM explainability." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <!-- Background Glow Effects -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+
+  <!-- Header Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"/>
+            <path d="M12 6v12"/>
+            <path d="M8 10c2-2 4-2 4 0s2 2 4 0"/>
+            <path d="M7 15c2.5-1.5 5-1.5 5 1s2.5 2.5 5 1"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">PlantCare <span class="badge-tech">XAI</span></h1>
+          <p class="brand-subtitle">Explainable Plant Disease Diagnosis & Telemetry</p>
+        </div>
+      </div>
+
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="tab-diagnostics" id="btn-tab-diagnostics">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          Diagnostic Studio
+        </button>
+        <button class="nav-tab" data-tab="tab-metrics" id="btn-tab-metrics">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Model Performance
+        </button>
+        <button class="nav-tab" data-tab="tab-library" id="btn-tab-library">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"></path><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+          Plant Care & Encyclopedia
+        </button>
+      </nav>
+
+      <div class="header-status">
+        <div class="model-pill-badge" id="header-model-badge" title="Active Deep Learning Architecture">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+          <span>Model: Custom 3-Block CNN</span>
+        </div>
+        <div class="status-divider"></div>
+        <div class="status-indicator" id="backend-status-dot"></div>
+        <span class="status-text" id="backend-status-text">Connecting to AI Engine...</span>
+      </div>
+
+      <!-- User Auth Section in Header -->
+      <div class="header-auth" id="header-auth-container">
+        <!-- Logged Out State Button -->
+        <button class="btn-auth-signin" id="btn-open-auth">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Sign In</span>
+        </button>
+
+        <!-- Logged In State Profile Pill (Hidden by default) -->
+        <div class="user-profile-menu" id="user-profile-menu" style="display: none;">
+          <button class="user-pill-btn" id="btn-toggle-user-menu" type="button" aria-expanded="false">
+            <div class="user-avatar" id="header-user-avatar">EV</div>
+            <div class="user-details-mini">
+              <span class="user-name" id="header-user-name">Dr. Elena Vance</span>
+              <span class="user-role-badge" id="header-user-role">Agronomist</span>
+            </div>
+            <svg class="chevron-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+
+          <!-- Dropdown Card -->
+          <div class="user-dropdown-card" id="user-dropdown-card" style="display: none;">
+            <div class="dropdown-header">
+              <p class="dropdown-name" id="dropdown-user-name">Dr. Elena Vance</p>
+              <p class="dropdown-email" id="dropdown-user-email">demo@plantcare.ai</p>
+              <span class="dropdown-tag">Verified Pathology Session</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item btn-signout" id="btn-logout" type="button">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+    
+    <!-- ========================================================
+         TAB 1: DIAGNOSTIC STUDIO
+         ======================================================== -->
+    <section class="tab-pane active" id="tab-diagnostics">
+      <!-- Top Hero Banner / Introduction -->
+      <div class="hero-strip glass-card">
+        <div class="hero-content">
+          <span class="chip-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align: middle; margin-right: 4px;"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>Active Model: Custom 3-Block CNN (114K Params • 128×128) • Grad-CAM Enabled</span>
+          <h2 class="hero-headline">Instant Crop Disease Diagnosis & Heatmap Explainability</h2>
+          <p class="hero-desc">
+            Powered by a lightweight <strong>Custom Convolutional Neural Network (CNN)</strong> trained on 38 plant disease classes.
+            Inspect neural visual attention heatmaps derived from layer <code class="code-hl">conv2d_2</code> in real time.
+          </p>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span class="stat-val">38</span>
+            <span class="stat-lbl">Crop Classes</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-val">97.7%</span>
+            <span class="stat-lbl">Val Accuracy</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-val">&lt; 150ms</span>
+            <span class="stat-lbl">Inference</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auth Gate Banner (Visible when user is not logged in) -->
+      <div class="auth-gate-banner glass-card" id="auth-gate-banner" style="display: none;">
+        <div class="auth-gate-content">
+          <div class="auth-gate-badge">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Agronomist Sign-In Required</span>
+          </div>
+          <h3 class="auth-gate-title">Sign in to unlock AI Diagnostic Studio & Neural Explainability</h3>
+          <p class="auth-gate-desc">
+            To run leaf disease identification, Grad-CAM neural attention heatmaps, and camera scanning, please sign in or use our instant 1-Click Demo.
+          </p>
+        </div>
+        <div class="auth-gate-actions">
+          <button class="btn-primary btn-gate-signin" id="btn-gate-signin" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+            <span>Sign In / 1-Click Demo</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Curated Sample Leaf Chips -->
+      <div class="samples-section">
+        <div class="section-title-row">
+          <h3 class="section-subtitle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Quick 1-Click Verification Samples
+          </h3>
+          <span class="samples-hint">Pick any sample below to run immediate diagnosis without uploading</span>
+        </div>
+        <div class="samples-grid" id="curated-samples-grid">
+          <!-- Dynamically populated sample cards -->
+          <div class="sample-skeleton">Loading sample library...</div>
+        </div>
+      </div>
+
+      <!-- Workspace Grid (Upload Studio + Results Panel) -->
+      <div class="studio-grid">
+        <!-- Left: Upload & Input Panel -->
+        <div class="studio-left">
+          <div class="glass-card upload-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                Leaf Input Studio
+              </h3>
+              <div class="input-actions">
+                <button class="btn-icon" id="btn-open-camera" title="Use Live Web Camera">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  Camera
+                </button>
+              </div>
+            </div>
+
+            <!-- Drag and Drop Zone -->
+            <div class="dropzone" id="leaf-dropzone">
+              <input type="file" id="file-input" accept="image/jpeg,image/png,image/jpg,image/webp" style="display: none;" />
+              <div class="dropzone-content" id="dropzone-prompt">
+                <div class="dropzone-icon-ring">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                </div>
+                <h4>Drag & drop leaf photo here</h4>
+                <p>or <span class="highlight-link">browse from your computer</span></p>
+                <div class="format-tags">
+                  <span>JPG</span><span>JPEG</span><span>PNG</span><span>WEBP</span>
+                </div>
+              </div>
+
+              <!-- Preview State Inside Dropzone -->
+              <div class="preview-container" id="dropzone-preview" style="display: none;">
+                <img id="preview-image" alt="Selected Plant Leaf" />
+                <!-- Scanning Laser Animation Line -->
+                <div class="scan-laser" id="scan-laser" style="display: none;"></div>
+                <button class="btn-remove-preview" id="btn-remove-file" title="Clear selection">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Run Prediction Button -->
+            <button class="btn-primary" id="btn-run-diagnosis" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Run Diagnostic & Grad-CAM</span>
+            </button>
+          </div>
+
+          <!-- Recent Scans Mini Panel -->
+          <div class="glass-card scans-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                Recent Scan Activity
+              </h3>
+              <span class="badge-counter" id="recent-scans-count">0</span>
+            </div>
+            <div class="recent-scans-list" id="recent-scans-list">
+              <p class="empty-text">No scans in this session yet. Upload a leaf or select a sample above.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Diagnostic & Explainability Results -->
+        <div class="studio-right">
+          <!-- Initial Placeholder State -->
+          <div class="glass-card empty-results-card" id="results-empty-state">
+            <div class="empty-icon-wrap">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <h3>Diagnostic Results & Explainability</h3>
+            <p>Select a sample above or upload a leaf image to generate real-time AI diagnosis and Grad-CAM neural attention overlays.</p>
+            <div class="quick-step-pills">
+              <span>1. Load Leaf</span>
+              <span>2. Neural Feedforward</span>
+              <span>3. Backward Gradient Tape (conv2d_2)</span>
+              <span>4. Agronomic Prescription</span>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div class="glass-card loading-results-card" id="results-loading-state" style="display: none;">
+            <div class="radar-spinner"></div>
+            <h3>Analyzing Foliage & Computing Gradients</h3>
+            <p id="loading-subtext">Computing activations for layer conv2d_2...</p>
+            <div class="loading-progress-bar"><div class="bar-fill"></div></div>
+          </div>
+
+          <!-- Active Diagnosis Results Content -->
+          <div class="results-content" id="results-active-state" style="display: none;">
+            <!-- Primary Diagnosis Banner -->
+            <div class="glass-card diagnosis-banner" id="diagnosis-banner-card">
+              <div class="banner-top">
+                <div class="diagnosis-tags">
+                  <span class="model-badge-tag" title="Inference Architecture">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                    Custom CNN
+                  </span>
+                  <span class="crop-badge" id="res-crop-badge">Apple</span>
+                  <span class="severity-badge" id="res-severity-badge">Moderate</span>
+                  <span class="status-badge" id="res-confidence-badge">High Certainty</span>
+                </div>
+                <div class="timing-tag" id="res-inference-time">112 ms</div>
+              </div>
+
+              <div class="diagnosis-main">
+                <div>
+                  <h2 class="disease-title" id="res-condition-title">Apple Scab</h2>
+                  <p class="pathogen-info" id="res-pathogen-info">Pathogen: Venturia inaequalis (Fungus)</p>
+                </div>
+                <div class="confidence-meter-box">
+                  <div class="confidence-circle" id="res-confidence-circle">
+                    <span class="conf-num" id="res-confidence-percent">98.4%</span>
+                    <span class="conf-lbl">Confidence</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="confidence-message" id="res-confidence-alert">
+                <!-- High / Moderate / Low alert text -->
+              </div>
+            </div>
+
+            <!-- Grad-CAM Visual Explainability Suite -->
+            <div class="glass-card xai-suite-card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                  Explainable AI (Grad-CAM) Visualizer
+                </h3>
+                <span class="target-layer-chip">Target: conv2d_2 (128 filters)</span>
+              </div>
+
+              <!-- Interactive Tabs for Heatmap Views -->
+              <div class="heatmap-view-tabs">
+                <button class="view-tab active" data-view="split" id="btn-view-split">Side-by-Side View</button>
+                <button class="view-tab" data-view="superimposed" id="btn-view-overlay">Full Heatmap Overlay</button>
+              </div>
+
+              <!-- Canvas / Image Display Stage -->
+              <div class="xai-stage" id="xai-stage-container">
+                <!-- Side-by-Side Comparison (Active Default) -->
+                <div class="xai-view-pane active" id="view-pane-split">
+                  <div class="split-col">
+                    <span class="split-label">1. Original Leaf Input</span>
+                    <img id="img-split-original" alt="Original Leaf" />
+                  </div>
+                  <div class="split-col highlight-split">
+                    <span class="split-label highlight-label">2. Grad-CAM Attention Overlay</span>
+                    <img id="img-split-overlay" alt="Superimposed" />
+                  </div>
+                </div>
+
+                <!-- Single Superimposed View -->
+                <div class="xai-view-pane" id="view-pane-superimposed" style="display: none;">
+                  <div class="img-wrapper">
+                    <img id="img-superimposed" alt="Grad-CAM Overlay" />
+                    <div class="overlay-legend">
+                      <span class="legend-warm">🔥 High Attention (Warm)</span>
+                      <span class="legend-cool">❄️ Background (Cool)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Raw Heatmap View -->
+                <div class="xai-view-pane" id="view-pane-raw" style="display: none;">
+                  <div class="img-wrapper">
+                    <img id="img-raw-heat" alt="Raw Heatmap" />
+                    <div class="overlay-legend">
+                      <span>Normalized Gradient Activation [0.0 - 1.0] (JET Colormap)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Explanation Guide Accordion -->
+              <div class="xai-explanation-box">
+                <h4>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                  How to Interpret This Heatmap
+                </h4>
+                <p>
+                  <strong>Red & Orange Zones:</strong> Show specific lesions, discolorations, and textural irregularities that most strongly influenced the neural network's diagnosis.
+                  <br>
+                  <strong>Blue & Green Zones:</strong> Represent benign leaf tissue or background imagery which had minimal contribution to the diagnostic score.
+                </p>
+              </div>
+            </div>
+
+            <!-- Top-5 Probability Distribution -->
+            <div class="glass-card top5-card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                  Top-5 Neural Probability Distribution
+                </h3>
+                <span class="distribution-info">Softmax class probabilities</span>
+              </div>
+              <div class="top5-list" id="res-top5-list">
+                <!-- Dynamically filled with top 5 candidates -->
+              </div>
+            </div>
+
+            <!-- Agronomic Treatment & Prevention Prescription -->
+            <div class="glass-card prescription-card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"></path><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+                  Agronomic Care & Prescription Plan
+                </h3>
+                <button class="btn-secondary btn-sm" id="btn-print-report">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                  Print / Save
+                </button>
+              </div>
+
+              <div class="prescription-grid">
+                <!-- Symptoms -->
+                <div class="rx-box">
+                  <div class="rx-title">
+                    <span class="rx-icon orange">🔍</span>
+                    <h4>Observed Symptoms</h4>
+                  </div>
+                  <p id="res-rx-symptoms">Olive-green to velvety dark brown spots on leaves.</p>
+                </div>
+
+                <!-- Organic / Cultural -->
+                <div class="rx-box">
+                  <div class="rx-title">
+                    <span class="rx-icon green">🌱</span>
+                    <h4>Organic & Cultural Controls</h4>
+                  </div>
+                  <p id="res-rx-organic">Apply copper octanoate or wettable sulfur sprays before bloom.</p>
+                </div>
+
+                <!-- Chemical -->
+                <div class="rx-box">
+                  <div class="rx-title">
+                    <span class="rx-icon blue">🧪</span>
+                    <h4>Chemical / Targeted Controls</h4>
+                  </div>
+                  <p id="res-rx-chemical">Apply systemic fungicides such as Captan or Mancozeb.</p>
+                </div>
+
+                <!-- Long-term Prevention -->
+                <div class="rx-box">
+                  <div class="rx-title">
+                    <span class="rx-icon purple">🛡️</span>
+                    <h4>Long-Term Prevention</h4>
+                  </div>
+                  <p id="res-rx-prevention">Plant resistant varieties and prune trees for optimal sun exposure.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         TAB 2: MODEL PERFORMANCE & METRICS
+         ======================================================== -->
+    <section class="tab-pane" id="tab-metrics">
+      <div class="arch-header glass-card">
+        <div>
+          <span class="chip-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>Model: Custom 3-Block CNN • 114,662 Parameters</span>
+          <h2>Empirical Convergence & Accuracy Metrics</h2>
+          <p>Training and validation telemetry for the <strong>Custom 3-Block CNN</strong> logged over 10 training epochs from training_hist.json.</p>
+        </div>
+        <div class="metrics-summary-grid" id="metrics-summary-cards">
+          <!-- Cards for Final Train Acc, Final Val Acc, Train Loss, Val Loss -->
+        </div>
+      </div>
+
+      <div class="charts-dual-grid">
+        <!-- Accuracy Curve Card -->
+        <div class="glass-card chart-card">
+          <div class="card-header">
+            <h3 class="card-title">Accuracy Evolution (Train vs. Validation)</h3>
+            <span class="legend-tag">
+              <span class="dot train-dot"></span> Train
+              <span class="dot val-dot"></span> Val (97.75%)
+            </span>
+          </div>
+          <div class="chart-canvas-container" id="accuracy-chart-container">
+            <svg id="svg-accuracy-chart" viewBox="0 0 600 300" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+
+        <!-- Loss Curve Card -->
+        <div class="glass-card chart-card">
+          <div class="card-header">
+            <h3 class="card-title">Cross-Entropy Loss (Convergence)</h3>
+            <span class="legend-tag">
+              <span class="dot train-loss-dot"></span> Train
+              <span class="dot val-loss-dot"></span> Val (0.0715)
+            </span>
+          </div>
+          <div class="chart-canvas-container" id="loss-chart-container">
+            <svg id="svg-loss-chart" viewBox="0 0 600 300" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training Log Epochs Table -->
+      <div class="glass-card table-card">
+        <h3 class="card-title">Epoch-by-Epoch Convergence Table</h3>
+        <div class="table-responsive">
+          <table class="specs-table" id="epochs-table">
+            <thead>
+              <tr>
+                <th>Epoch</th>
+                <th>Train Accuracy</th>
+                <th>Val Accuracy</th>
+                <th>Train Loss</th>
+                <th>Val Loss</th>
+                <th>Delta (Val - Train)</th>
+              </tr>
+            </thead>
+            <tbody id="epochs-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         TAB 4: CROP & DISEASE ENCYCLOPEDIA
+         ======================================================== -->
+    <section class="tab-pane" id="tab-library">
+      <div class="arch-header glass-card">
+        <div>
+          <span class="chip-pill">Botanical Pathology Database</span>
+          <h2>38 Configured Crop Disease Profiles</h2>
+          <p>Search and explore symptoms, causal pathogens, and treatment recommendations across all supported categories.</p>
+        </div>
+        <div class="encyclopedia-search-bar">
+          <div class="search-input-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="encyclopedia-search" placeholder="Search by crop (e.g. Tomato, Apple) or disease name..." />
+          </div>
+          <div class="filter-pills" id="crop-filters">
+            <button class="filter-pill active" data-crop="all">All Crops</button>
+            <button class="filter-pill" data-crop="Apple">Apple</button>
+            <button class="filter-pill" data-crop="Corn">Corn</button>
+            <button class="filter-pill" data-crop="Grape">Grape</button>
+            <button class="filter-pill" data-crop="Potato">Potato</button>
+            <button class="filter-pill" data-crop="Tomato">Tomato</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="encyclopedia-grid" id="encyclopedia-cards-grid">
+        <!-- Filled with cards for all 38 classes -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Live Camera Modal -->
+  <div class="modal-backdrop" id="camera-modal" style="display: none;">
+    <div class="glass-card modal-card">
+      <div class="card-header">
+        <h3 class="card-title">Live Camera Capture</h3>
+        <button class="btn-icon" id="btn-close-camera">✕</button>
+      </div>
+      <div class="camera-stream-wrapper">
+        <video id="camera-video" autoplay playsinline></video>
+        <canvas id="camera-canvas" style="display: none;"></canvas>
+      </div>
+      <div class="camera-controls">
+        <button class="btn-secondary" id="btn-cancel-camera">Cancel</button>
+        <button class="btn-primary" id="btn-snapshot-camera">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+          Capture Leaf
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Disease Details Modal -->
+  <div class="modal-backdrop" id="disease-modal" style="display: none;">
+    <div class="glass-card modal-card modal-large">
+      <div class="card-header">
+        <h3 class="card-title" id="modal-disease-title">Disease Profile</h3>
+        <button class="btn-icon" id="btn-close-disease-modal">✕</button>
+      </div>
+      <div class="modal-body" id="modal-disease-body">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Authentication (Login / Register) Modal -->
+  <div class="modal-backdrop" id="auth-modal" style="display: none;">
+    <div class="glass-card modal-card auth-modal-card">
+      <div class="auth-header">
+        <div class="auth-brand-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"/>
+            <path d="M12 6v12"/>
+            <path d="M8 10c2-2 4-2 4 0s2 2 4 0"/>
+            <path d="M7 15c2.5-1.5 5-1.5 5 1s2.5 2.5 5 1"/>
+          </svg>
+        </div>
+        <div class="auth-title-wrap">
+          <h3 class="auth-title" id="auth-modal-title">Welcome to PlantCare AI</h3>
+          <p class="auth-subtitle" id="auth-modal-subtitle">Sign in to sync diagnoses and field telemetry</p>
+        </div>
+        <button class="btn-icon auth-close-btn" id="btn-close-auth-modal" title="Close" type="button">✕</button>
+      </div>
+
+      <!-- Segmented Tab Switcher (Sign In vs Register) -->
+      <div class="auth-tabs-toggle">
+        <button class="auth-toggle-btn active" id="tab-auth-login" type="button">Sign In</button>
+        <button class="auth-toggle-btn" id="tab-auth-register" type="button">Create Account</button>
+      </div>
+
+      <!-- Quick 1-Click Demo Fill Banner -->
+      <div class="demo-account-box" id="demo-account-box">
+        <div class="demo-box-text">
+          <strong>⚡ Quick Testing?</strong>
+          <span>Use pre-configured demo pathologist credentials</span>
+        </div>
+        <button class="btn-demo-quick" id="btn-fill-demo" type="button">1-Click Sign In</button>
+      </div>
+
+      <!-- Auth Error / Success Alert -->
+      <div class="auth-alert" id="auth-alert" style="display: none;"></div>
+
+      <!-- Auth Form -->
+      <form class="auth-form" id="auth-form" autocomplete="on">
+        <!-- Full Name (Only visible for Register) -->
+        <div class="form-group" id="group-auth-name" style="display: none;">
+          <label for="auth-name">Full Name</label>
+          <div class="input-with-icon">
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <input type="text" id="auth-name" placeholder="e.g. Dr. Jane Goodall" autocomplete="name" />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="auth-email">Email Address</label>
+          <div class="input-with-icon">
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <input type="email" id="auth-email" placeholder="name@domain.com" required autocomplete="email" />
+          </div>
+        </div>
+
+        <!-- Password with eye toggle -->
+        <div class="form-group">
+          <label for="auth-password">Password</label>
+          <div class="input-with-icon">
+            <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <input type="password" id="auth-password" placeholder="••••••••" required autocomplete="current-password" minlength="6" />
+            <button type="button" class="btn-toggle-pwd" id="btn-toggle-pwd" title="Show/Hide Password">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary auth-submit-btn" id="btn-auth-submit">
+          <span class="btn-spinner" id="auth-spinner" style="display: none;"></span>
+          <span id="auth-submit-label">Sign In to Diagnostic Studio</span>
+        </button>
+      </form>
+
+      <div class="auth-footer-note">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Protected with PBKDF2 encryption & session-based security</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <p>🌿 PlantCare AI • Built with TensorFlow, FastAPI & Vanilla Modern Web Standards • Grad-CAM Explainability System</p>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

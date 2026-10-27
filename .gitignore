@@ -1,0 +1,29 @@
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.ipynb_checkpoints/
+
+# Massive Training Dataset (Do not push 87,000 raw images to GitHub)
+dataset/
+
+# Node & Frontend dependencies
+node_modules/
+frontend/node_modules/
+frontend/.vite/
+
+# Local databases & scratch
+backend/users.db
+backend/users.db-journal
+scratch/
+*.log
+
+# OS artifacts
+.DS_Store
+Thumbs.db
